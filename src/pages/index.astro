@@ -1,50 +1,107 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import Layout from "../layouts/Layout.astro";
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header title={SITE_TITLE} />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/pages/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to <a href="https://docs.astro.build/"
-					>read the docs
-				</a> or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out <a
-					href="https://github.com/Charca/astro-blog-template"
-					>astro-blog-template
-				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Layout>
+  <canvas id="stars"></canvas>
+</Layout>
+
+<script type="text/javascript">
+  const canvas = document.getElementById("stars");
+  const context = canvas.getContext("2d");
+
+  const isMobile = window.matchMedia(
+    "only screen and (max-width: 760px)"
+  ).matches;
+
+  let numStars = 150;
+  let minDistanceTreshold = 75;
+  let height = 400;
+  let starGrowth = 1.5;
+
+  if (isMobile) {
+    numStars = 50;
+    minDistanceTreshold = 35;
+    height = 200;
+    starGrowth = 1;
+  }
+
+  canvas.width = window.innerWidth;
+  canvas.height = height;
+
+  function Star() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.radius = Math.random() * starGrowth + 1;
+    this.vx = Math.random() * 0.5 - 0.25;
+    this.vy = Math.random() * 0.5 - 0.25;
+  }
+
+  const stars = Array.from({ length: numStars }, () => new Star());
+
+  function updateStars() {
+    stars.forEach((star) => {
+      star.x += star.vx;
+      star.y += star.vy;
+
+      if (star.x < 0 || star.x > canvas.width) {
+        star.vx = -star.vx;
+      }
+      if (star.y < 0 || star.y > canvas.height) {
+        star.vy = -star.vy;
+      }
+    });
+  }
+
+  function drawStars() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the background
+    const gradient = context.createLinearGradient(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+    gradient.addColorStop(0, "#000");
+    gradient.addColorStop(1, "#120A3A");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw stars
+    context.fillStyle = "#ffffff";
+    stars.forEach((star) => {
+      context.beginPath();
+      context.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
+      context.fill();
+    });
+
+    // Draw connections
+    context.globalAlpha = 0.1;
+    for (let i = 0; i < stars.length; i++) {
+      for (let j = i + 1; j < stars.length; j++) {
+        const dist = Math.sqrt(
+          Math.pow(stars[i].x - stars[j].x, 2) +
+            Math.pow(stars[i].y - stars[j].y, 2)
+        );
+        if (dist < minDistanceTreshold) {
+          const opacity = 1 - dist / 100;
+          context.strokeStyle = `rgba(173, 216, 230, ${opacity})`;
+          context.beginPath();
+          context.moveTo(stars[i].x, stars[i].y);
+          context.lineTo(stars[j].x, stars[j].y);
+          context.stroke();
+        }
+      }
+    }
+    context.globalAlpha = 1;
+  }
+
+  function animate() {
+    updateStars();
+    drawStars();
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+</script>
