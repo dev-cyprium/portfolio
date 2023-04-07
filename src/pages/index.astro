@@ -3,40 +3,19 @@ import Layout from "../layouts/Layout.astro";
 import { Image } from "@astrojs/image/components";
 import { Icon } from "astro-icon";
 import profilePicture from "@assets/picture.jpg";
+import FrontEnd from "@components/parts/FrontEnd.astro";
+import BackEnd from "@components/parts/BackEnd.astro";
+import FullStack from "@components/parts/FullStack.astro";
 
 const content = [
   {
-    title: "Front-end",
-    description: `I am a programmer with a specialized skill set in front-end
-              development, with a strong command of popular frameworks like
-              VueJS, AngularJS, and a passion for exploring emerging
-              technologies such as Svelte. I am well-versed in the intricacies
-              of front-end development, with an in-depth understanding of the
-              latest frameworks, libraries, and tools. My focus is on creating
-              seamless, engaging user experiences that leave a lasting
-              impression on the end-user.`,
+    Component: FrontEnd,
   },
   {
-    title: "Back-end",
-    description: `As a programmer with extensive experience in back-end development,
-              I am adept at building high-quality systems that can handle
-              significant traffic while prioritizing security and optimization.
-              My expertise includes working with modern MVC frameworks, such as
-              Phoenix, an Elixir OTP framework, and I am passionate about
-              exploring new technologies to stay ahead of the curve. My goal is
-              to deliver optimal results by leveraging my knowledge, experience,
-              and commitment to excellence.`,
+    Component: BackEnd,
   },
   {
-    title: "Full-stack",
-    description: `As a full-stack programmer, I have a comprehensive understanding
-              of both front-end and back-end development, allowing me to create
-              seamless end-to-end solutions that deliver a superior user
-              experience. I specialize in modern MVC frameworks like Phoenix,
-              along with front-end technologies such as VueJS and AngularJS.
-              With a passion for staying up-to-date with the latest industry
-              trends, I am always eager to explore new technologies and
-              approaches to deliver optimal results.`,
+    Component: FullStack,
   },
 ];
 
@@ -112,16 +91,20 @@ const icons = [
             />
           </a>
         </div>
-        <div class="grid grid-cols-3 text-white gap-3 mx-4">
+        <div class="grid grid-cols-3 text-white gap-5 mx-4">
           {
-            content.map((item) => (
-              <div class="col-span-3 md:col-span-1">
-                <h3 class="text-3xl mt-3 lg:mt-0 mb-3 text-purple-400 text-center">
-                  {item.title}
-                </h3>
-                <p class="leading-7 text-lg">{item.description}</p>
-              </div>
-            ))
+            content.map((item) =>
+              item?.Component ? (
+                <item.Component />
+              ) : (
+                <div class="col-span-3 md:col-span-1">
+                  <h3 class="text-3xl mt-3 lg:mt-0 mb-3 text-purple-400 text-center">
+                    {item.title}
+                  </h3>
+                  <p class="leading-7 text-lg">{item.description}</p>
+                </div>
+              )
+            )
           }
         </div>
       </div>

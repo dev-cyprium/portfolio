@@ -1,0 +1,36 @@
+---
+import hljs from "highlight.js";
+
+const html = hljs.highlight(
+  `
+---
+import hljs from "highlight.js";
+
+const html = hljs.highlight(
+  \`would cause a recursion 🚀\`,
+  { language: "astro" }
+).value;
+---
+
+<div class="col-span-3 lg:col-span-1 flex flex-col">
+  <h3 class="text-3xl mt-3 lg:mt-0 mb-3 text-purple-400 text-center">
+    Full-Stack
+  </h3>
+  <div class="bg-gray-800 rounded-md p-4 flex-1">
+    <pre class="overflow-x-scroll" set:html={html} />
+  </div>
+</div>
+
+`,
+  { language: "js" }
+).value;
+---
+
+<div class="col-span-3 lg:col-span-1 flex flex-col">
+  <h3 class="text-3xl mt-3 lg:mt-0 mb-3 text-purple-400 text-center">
+    Full-Stack
+  </h3>
+  <div class="bg-gray-800 rounded-md p-4 flex-1">
+    <pre class="overflow-x-scroll" set:html={html} />
+  </div>
+</div>

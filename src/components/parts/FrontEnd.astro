@@ -1,0 +1,41 @@
+---
+import hljs from "highlight.js";
+
+const html = hljs.highlight(
+  `
+import React, { useState } from 'react';
+
+const ThemeToggler = () => {
+  const [isDark, setIsDark] = useState(false);
+  const toggleTheme = () => setIsDark(!isDark);
+
+  return (
+    <div 
+    className={\`app 
+      \${isDark ? "dark-theme" : "light-theme"}\`}>
+      <h3>{isDark ? 
+        "🌙 I code at night. Hire me!" : 
+        "☀️ I code during the day. Hire me!"}</h3>
+      <button onClick={toggleTheme}>
+        {isDark ? 
+          'Switch to Day Mode' : 
+          'Switch to Night Mode'}
+      </button>
+    </div>
+  );
+};
+
+export default ThemeToggler;
+`,
+  { language: "typescript" }
+).value;
+---
+
+<div class="col-span-3 lg:col-span-1 flex flex-col">
+  <h3 class="text-3xl mt-3 lg:mt-0 mb-3 text-purple-400 text-center">
+    Frontend
+  </h3>
+  <div class="bg-gray-800 rounded-md p-4 flex-1">
+    <pre class="overflow-x-scroll" set:html={html} />
+  </div>
+</div>
