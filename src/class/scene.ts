@@ -21,8 +21,8 @@ export class Scene {
     ).matches;
 
     if (isMobile) {
-      this.numStars = 50;
-      this.minDistanceTreshold = 35;
+      this.numStars = 100;
+      this.minDistanceTreshold = 55;
       this.height = 300;
       this.starGrowth = 1;
     } else {
