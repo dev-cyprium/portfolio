@@ -125,9 +125,16 @@ const icons = [
   const scene = new Scene(canvas);
   const context = canvas.getContext("2d");
 
-  window.addEventListener("scroll", () => {
-    canvas.style.transform = `translateY(${window.scrollY * 0.5}px)`;
-  });
+  // window.addEventListener("scroll", () => {
+  //   canvas.style.transform = `translateY(${window.scrollY * 0.5}px)`;
+  // });
+
+  function updateParallax() {
+    const scrollPosition = window.scrollY;
+    canvas.style.transform = `translateY(${scrollPosition * 0.5}px)`;
+    requestAnimationFrame(updateParallax);
+  }
+  updateParallax();
 
   if (context === null) {
     throw new Error("Could not get canvas context");
