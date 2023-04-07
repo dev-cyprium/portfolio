@@ -92,20 +92,7 @@ const icons = [
           </a>
         </div>
         <div class="grid grid-cols-3 text-white gap-5 mx-4">
-          {
-            content.map((item) =>
-              item?.Component ? (
-                <item.Component />
-              ) : (
-                <div class="col-span-3 md:col-span-1">
-                  <h3 class="text-3xl mt-3 lg:mt-0 mb-3 text-purple-400 text-center">
-                    {item.title}
-                  </h3>
-                  <p class="leading-7 text-lg">{item.description}</p>
-                </div>
-              )
-            )
-          }
+          {content.map((item) => <item.Component />)}
         </div>
       </div>
 
@@ -137,6 +124,10 @@ const icons = [
   const canvas = document.getElementById("stars") as HTMLCanvasElement;
   const scene = new Scene(canvas);
   const context = canvas.getContext("2d");
+
+  window.addEventListener("scroll", () => {
+    canvas.style.transform = `translateY(${window.scrollY * 0.5}px)`;
+  });
 
   if (context === null) {
     throw new Error("Could not get canvas context");
