@@ -3,105 +3,62 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  <canvas id="stars"></canvas>
+  <div>
+    <canvas class="relative z-0" id="stars"></canvas>
+    <div
+      class="container -mt-24 mx-auto h-48 bg-red-500 rounded-md relative z-10"
+    >
+    </div>
+  </div>
 </Layout>
 
-<script type="text/javascript">
-  const canvas = document.getElementById("stars");
+<script>
+  import { Star } from "../class/star";
+  import { Scene } from "../class/scene";
+
+  const canvas = document.getElementById("stars") as HTMLCanvasElement;
+  const scene = new Scene(canvas);
   const context = canvas.getContext("2d");
 
-  const isMobile = window.matchMedia(
-    "only screen and (max-width: 760px)"
-  ).matches;
-
-  let numStars = 150;
-  let minDistanceTreshold = 75;
-  let height = 400;
-  let starGrowth = 1.5;
-
-  if (isMobile) {
-    numStars = 50;
-    minDistanceTreshold = 35;
-    height = 200;
-    starGrowth = 1;
+  if (context === null) {
+    throw new Error("Could not get canvas context");
   }
 
-  canvas.width = window.innerWidth;
-  canvas.height = height;
+  window.addEventListener("resize", () => {
+    scene.init();
+    scene.resize();
+    scene.makeStars();
+  });
 
-  function Star() {
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.radius = Math.random() * starGrowth + 1;
-    this.vx = Math.random() * 0.5 - 0.25;
-    this.vy = Math.random() * 0.5 - 0.25;
-  }
+  setupScene(context);
+  function setupScene(context: CanvasRenderingContext2D) {
+    scene.init();
+    scene.resize();
+    scene.makeStars();
 
-  const stars = Array.from({ length: numStars }, () => new Star());
-
-  function updateStars() {
-    stars.forEach((star) => {
-      star.x += star.vx;
-      star.y += star.vy;
-
-      if (star.x < 0 || star.x > canvas.width) {
-        star.vx = -star.vx;
-      }
-      if (star.y < 0 || star.y > canvas.height) {
-        star.vy = -star.vy;
-      }
-    });
-  }
-
-  function drawStars() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw the background
-    const gradient = context.createLinearGradient(
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    );
-    gradient.addColorStop(0, "#000");
-    gradient.addColorStop(1, "#120A3A");
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw stars
-    context.fillStyle = "#ffffff";
-    stars.forEach((star) => {
-      context.beginPath();
-      context.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
-      context.fill();
-    });
-
-    // Draw connections
-    context.globalAlpha = 0.1;
-    for (let i = 0; i < stars.length; i++) {
-      for (let j = i + 1; j < stars.length; j++) {
-        const dist = Math.sqrt(
-          Math.pow(stars[i].x - stars[j].x, 2) +
-            Math.pow(stars[i].y - stars[j].y, 2)
-        );
-        if (dist < minDistanceTreshold) {
-          const opacity = 1 - dist / 100;
-          context.strokeStyle = `rgba(173, 216, 230, ${opacity})`;
-          context.beginPath();
-          context.moveTo(stars[i].x, stars[i].y);
-          context.lineTo(stars[j].x, stars[j].y);
-          context.stroke();
-        }
-      }
+    function drawBackground(ctx: CanvasRenderingContext2D) {
+      const gradient = ctx.createLinearGradient(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+      gradient.addColorStop(0, "#000");
+      gradient.addColorStop(1, "#120A3A");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
-    context.globalAlpha = 1;
-  }
 
-  function animate() {
-    updateStars();
-    drawStars();
-    requestAnimationFrame(animate);
-  }
+    function animate(ctx: CanvasRenderingContext2D) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawBackground(ctx);
+      const stars = scene.getStars();
+      stars.forEach((star) => star.update(canvas.width, canvas.height));
+      stars.forEach((star) => star.draw(ctx));
+      Star.drawConnections(ctx, stars, scene.getMinDistanceThreshold());
+      requestAnimationFrame(() => animate(ctx));
+    }
 
-  animate();
+    animate(context);
+  }
 </script>
