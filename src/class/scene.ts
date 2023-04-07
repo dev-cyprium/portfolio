@@ -23,7 +23,7 @@ export class Scene {
     if (isMobile) {
       this.numStars = 50;
       this.minDistanceTreshold = 35;
-      this.height = 200;
+      this.height = 300;
       this.starGrowth = 1;
     } else {
       this.numStars = 250;
